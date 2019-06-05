@@ -4,7 +4,7 @@ The SWTbahn-lantern is a synchronized LED driven point lantern based on an Attin
 It is deployed on the SWTbahn Standard and connected with the BiDiB OneControl.
 The OneControl supplies power and a sync signal via the GPIO to the ATtiny.
 
-NOTE: the current working version is src/lantern.c
+NOTE: the current working version is [src/lantern.c](src/lantern.c)
 
 ## Getting started
 
@@ -28,14 +28,13 @@ When using Arduino IDE:
   2. Select "Tools" in the upper drop-down bar and configure the settings regarding the programmer
 
   Example:
-
-    ```
-    Board: "ATtiny/24/48/84"
-    Processor: "ATtiny84"
-    Clock: "Internal 8 MHz"
-    Port: "COM4"
-
-    ```
+  
+  ```
+  Board: "ATtiny/24/48/84"
+  Processor: "ATtiny84"
+  Clock: "Internal 8 MHz"
+  Port: "COM4"
+  ```
 
   3. Click on compile (tick) and then click on upload (arrow)
 
