@@ -12,7 +12,7 @@ The OneControl supplies power and a sync signal via the GPIO to the ATtiny.
 
   - ISP- Programmer
   - Arduino IDE
-  - [damellis ATtiny libary for Arduino] (https://github.com/damellis/attiny)
+  - [damellis ATtiny libary for Arduino](https://github.com/damellis/attiny)
 
 ### Programming
 
@@ -34,16 +34,17 @@ If any errors occurs check the power supply or the ISP header.
 
 ### Notes
 
-	Interrupt for the Sync Pin (see Datasheet p. 50)
+Interrupt for the Sync Pin (see Datasheet p. 50)
 
-	```
+```
     GIMSK = (1 << PCIE1); // Pin Change Interrupt Enable 1
     GIFR = (1 << PCIF1); // Pin Change Interrupt Flag 1
     PCMSK1 = (1 << SYNC_INT); //Pin Change Enable Mask 9
-	```
+```
 
-	Setup for Sync-Timer (see Datasheet p. 85)
-	```
+Setup for Sync-Timer (see Datasheet p. 85)
+
+```
     // Timer/Counter 1 at 800
     TCCR1A = 0; // Clear register TCCR1A
     TCCR1B = 0; // Clear register TCCR1B
@@ -53,6 +54,6 @@ If any errors occurs check the power supply or the ISP header.
     TCCR1B |= (1 << WGM12); // Enable Clear Timer on Capture mode
     TCCR1B |= (1 << CS11) | (1 << CS10);  // Prescaler of 64
     TIMSK1 |= (1 << OCIE1A);  // Enable timer compare interrupt
-	```
+```
 
 For more details check out the [SWTbahn documentation](https://vc.uni-bamberg.de/moodle/course/view.php?id=26901 "SWTbahn").
