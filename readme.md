@@ -43,11 +43,11 @@ the OneControl GPIO ports), while the SWTbahn Full uses an Adafruit Metro Mini
   * USB to UART bridge VCP drivers
 2. Open `lantern-adafruit-metro-mini.ino` in Arduino IDE
 3. Plug the Adafruit Metro Mini into a USB port of your computer, and record the serial port it has been assigned
-3. Select Tools in the menu bar and configure the following settings:
+4. Select Tools in the menu bar and configure the following settings:
   * Board: Arduino/Genuino UNO
   * Port: Whichever port the programmer has been assigned
   * Programmer: USBtinyISP
-4. Compile and upload to the Adafruit Metro Mini
+5. Compile and upload to the Adafruit Metro Mini
 
 
 ## Notes on Setting the ATtiny84A Interrupt and PWM Timer
