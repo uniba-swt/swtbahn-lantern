@@ -16,8 +16,6 @@ The OneControl supplies power and a sync signal via the GPIO to the ATtiny.
 
 ### Programming
 
-  alskdjflkasjdf
-
   1. Open lantern.ino in Arduino IDE
   2. Select "Tools" in the upper drop-down bar and configure the settings regarding the programmer
 
