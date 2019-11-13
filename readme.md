@@ -1,40 +1,58 @@
-# SWTbahn-lantern
+# swtbahn-lantern
 
-The SWTbahn-lantern is a synchronized LED driven point lantern based on an Attiny84A.
-It is deployed on the SWTbahn Standard and connected with the BiDiB OneControl.
-The OneControl supplies power and a sync signal via the GPIO to the ATtiny.
+The SWTbahn platforms use lanterns to indicate the current positions of the
+servo-driven points. A lantern has constant brightness if its associated point
+is in the normal position, and has pulsing brightness if its point is in the reverse
+position. The pulsing effect of all lanterns are synchronised via a synchronisation
+pulse generated from the OneControl boards.
+
+The SWTbahn Standard uses an ATtiny84A to control the lantern LED (powered from
+the OneControl GPIO ports), while the SWTbahn Full uses an Adafruit Metro Mini
+(powered externally by a 5V supply).
 
 
-## Getting started
+## Prerequisites
+
+  * Programmer for the ATtiny: [STK500](doc/stk500-isp-programmer.pdf)
+  * [Arduino IDE](https://www.arduino.cc/en/Main/Software)
+  * [ATtiny board support for Arduino](https://github.com/damellis/attiny)
+    1. Open the Arduino IDE
+    2. Go to the settings and add the following board manager URL: https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json
+    3. Go to Tools > Boards > Board Manager
+    4. Search for "attiny" by David A. Mellis and install the board support package
 
 
-### Prerequisites
+## Programming with Arduino IDE
 
-  - ISP- Programmer
-  - Arduino IDE
-  - [damellis ATtiny libary for Arduino](https://github.com/damellis/attiny)
+### ATtiny84A
+1. Open `lantern-attiny84a.ino` in Arduino IDE
+2. Plug the STK500 programmer into the computer, and record the serial port it has been assigned
+3. Select Tools in the menu bar and configure the following settings:
+  * Board: ATtiny/24/48/84
+  * Processor: ATtiny84
+  * Clock: Internal 8 MHz
+  * Port: Whichever port the programmer has been assigned
+  * Programmer: Atmel STK500 development board
+4. Plug the STK500 programmer to the ATtiny84A
+5. Compile and upload to the ATtiny84A  
 
-### Programming
 
-  1. Open lantern.ino in Arduino IDE
-  2. Select "Tools" in the upper drop-down bar and configure the settings regarding the programmer
+### Adafruit Metro Mini
+1. Download and install the USB serial drivers
+  * Virtual COM port drivers
+  * USB to UART bridge VCP drivers
+2. Open `lantern-adafruit-metro-mini.ino` in Arduino IDE
+3. Plug the Adafruit Metro Mini into a USB port of your computer, and record the serial port it has been assigned
+4. Select Tools in the menu bar and configure the following settings:
+  * Board: Arduino/Genuino UNO
+  * Port: Whichever port the programmer has been assigned
+  * Programmer: USBtinyISP
+5. Compile and upload to the Adafruit Metro Mini
 
-  Example:
 
-  ```
-  Board: "ATtiny/24/48/84"
-  Processor: "ATtiny84"
-  Clock: "Internal 8 MHz"
-  Port: "COM4"
-  ```
+## Notes on Setting the ATtiny84A Interrupt and PWM Timer
 
-  3. Click on compile (tick) and then click on upload (arrow)
-
-If any errors occurs check the power supply or the ISP header.
-
-### Notes
-
-Interrupt for the Sync Pin (see Datasheet p. 50)
+Interrupt for the synchronisation pulse pin (see [Datasheet p. 50](doc/attiny84a-datasheet.pdf))
 
 ```
 GIMSK = (1 << PCIE1); // Pin Change Interrupt Enable 1
@@ -42,7 +60,7 @@ GIFR = (1 << PCIF1); // Pin Change Interrupt Flag 1
 PCMSK1 = (1 << SYNC_INT); //Pin Change Enable Mask 9
 ```
 
-Setup for Sync-Timer (see Datasheet p. 85)
+PWM for the glowing effect (see [Datasheet p. 85](doc/attiny84a-datasheet.pdf))
 
 ```
 // Timer/Counter 1 at 800
@@ -55,5 +73,3 @@ TCCR1B |= (1 << WGM12); // Enable Clear Timer on Capture mode
 TCCR1B |= (1 << CS11) | (1 << CS10);  // Prescaler of 64
 TIMSK1 |= (1 << OCIE1A);  // Enable timer compare interrupt
 ```
-
-For more details check out the [SWTbahn documentation](https://vc.uni-bamberg.de/moodle/course/view.php?id=26901 "SWTbahn").
