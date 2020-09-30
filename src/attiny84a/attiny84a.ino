@@ -2,12 +2,14 @@
  * -----------------------
  *
  * Eugene Yip
- * 6 November 2019
+ * 30 September 2020
  *
  */
 
 // #define DEBUG_SERVO
 #define DEBUG_SYNC
+
+#define FLIP_FEEDBACK
 
 typedef enum {
   ONBOARD_LED = 3
@@ -15,8 +17,13 @@ typedef enum {
 
 // Define pins connected to the servo ports
 typedef enum {
-  SERVO_PIN_AUX1   = 0, // Servo AUX1 port
-  SERVO_PIN_AUX2   = 1  // Servo AUX2 port
+  #ifndef FLIP_FEEDBACK
+    SERVO_PIN_AUX1 = 0, // Servo AUX1 port
+    SERVO_PIN_AUX2 = 1  // Servo AUX2 port
+  #else
+    SERVO_PIN_AUX1 = 1, // Servo AUX1 port
+    SERVO_PIN_AUX2 = 0  // Servo AUX2 port
+  #endif
 } ServoPins;
 
 // Define pins connected to the lantern LED
@@ -63,8 +70,7 @@ volatile ServoState servoState = {
 typedef enum {
   LANTERN_OFF = 255 - 255,
   LANTERN_DIM = 255 - 230,
-  LANTERN_MID = 255 - 127,
-  LANTERN_ON  = 255 - 0
+  LANTERN_ON  = 255 - 100
 } LanternBrightness;
 
 typedef struct {
@@ -104,13 +110,13 @@ void setup(void) {
   GIFR = (1 << PCIF1); // Pin Change Interrupt Flag 1
   PCMSK1 = (1 << SYNC_INT); //Pin Change Enable Mask 9
 
-  // Timer/Counter 1 at 600Hz
+  // Timer/Counter 1 at 1524Hz
   TCCR1A = 0; // Clear register TCCR0A
   TCCR1B = 0; // Clear register TCCR0B
   TCNT1  = 0; // Reset counter value
-  // Set compare match register for 600Hz increments
-  OCR1A = 40;  // = 8MHz/(3kHz*64 prescaler) - 1, (OCR0A value must be less than 65536)
-  TCCR1B |= (1 << WGM12); // Enable Clear Timer on Capture mode
+  // Set compare match register for 1524Hz increments
+  OCR1A = 90;  // = 8MHz/(1524Hz*2*64 prescaler) - 1, (OCR0A value must be less than 65536)
+  TCCR1B |= (1 << WGM12); // Enable Clear Timer on Capture Match mode
   TCCR1B |= (1 << CS11) | (1 << CS10);  // Prescaler of 64
   TIMSK1 |= (1 << OCIE1A);  // Enable timer compare interrupt
 
@@ -118,7 +124,7 @@ void setup(void) {
   sei();  // Enable global interrupts
 }
 
-// Interrupt service routine: Timer/Counter 1 at 600Hz
+// Interrupt service routine: Timer/Counter 1 at 1524Hz
 // Updates the lantern's next state of its glowing cycle and
 // tracks the synchronisation pulse
 ISR(TIM1_COMPA_vect) {

@@ -66,7 +66,6 @@ volatile ServoState servoState = {
 typedef enum {
   LANTERN_OFF = 255,
   LANTERN_DIM = 230,
-  LANTERN_MID = 127,
   LANTERN_ON  = 100
 } LanternBrightness;
 
