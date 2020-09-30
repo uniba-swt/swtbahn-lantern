@@ -2,7 +2,7 @@
  * ---------------------------------
  * 
  * Eugene Yip
- * 6 November 2019
+ * 30 September 2020
  * 
  */
 
@@ -22,8 +22,10 @@ typedef enum {
 
 // Define pins connected to the lantern LED
 typedef enum {
-  LANTERN_VCC = 8,  // VCC at 5V
-  LANTERN_PWM = 9   // Lantern brightness using PWM
+  LANTERN_FLIP_REF = 6,  // Reference signal to flip the lantern state
+  LANTERN_FLIP     = 7,  // Detects signal to flip the lantern state
+  LANTERN_VCC      = 8,  // VCC at 5V
+  LANTERN_PWM      = 9   // Lantern brightness using PWM
 } LanternPins;
 
 // Define pin connected to the OneControl synchronisation pulse
@@ -65,25 +67,27 @@ typedef enum {
   LANTERN_OFF = 255,
   LANTERN_DIM = 230,
   LANTERN_MID = 127,
-  LANTERN_ON  = 0
+  LANTERN_ON  = 100
 } LanternBrightness;
 
 typedef struct {
   int pwmValue;
   int pwmDirection;
   bool isGlowCycleComplete;
+  bool isFlipped;
 } LanternState;
 
 volatile LanternState lanternState = {
   .pwmValue = LANTERN_DIM - 1,
   .pwmDirection = -1,
-  .isGlowCycleComplete = false
+  .isGlowCycleComplete = false,
+  .isFlipped = false
 };
 
 void setup(void) {
   // Start serial session
   Serial.begin(9600);
-  Serial.println("Servo lantern: 6 November 2019");
+  Serial.println("Servo lantern: 30 September 2020");
 
   // Servo feedback pins (Active low)
   pinMode(SERVO_PIN_AUX1, INPUT_PULLUP);
@@ -98,6 +102,11 @@ void setup(void) {
   analogWrite(LANTERN_PWM, LANTERN_OFF);
   lanternGlowReset();
 
+  // Lantern state flip
+  pinMode(LANTERN_FLIP_REF, OUTPUT);
+  pinMode(LANTERN_FLIP, INPUT_PULLUP);
+  digitalWrite(LANTERN_FLIP_REF, LOW);
+
   // OneControl pulse synchronisation
   pinMode(SYNC_PIN, INPUT_PULLUP);
 
@@ -110,13 +119,13 @@ void setup(void) {
   // Trigger the lantern glowing effect on the rising edge of the synchronisation pulse
   attachInterrupt(digitalPinToInterrupt(SYNC_PIN), lanternGlowReset, RISING);
 
-  // Timer/Counter 0 at 504Hz
+  // Timer/Counter 0 at 96Hz
   TCCR0A = 0; // Clear register TCCR0A
   TCCR0B = 0; // Clear register TCCR0B
   TCNT0  = 0; // Reset counter value
-  // Set compare match register for 504Hz increments
-  OCR0A = 30;  // = 16MHz/(504Hz*1024 prescaler) - 1, (OCR0A value must be less than 256)
-  TCCR0A |= (1 << WGM01); // Enable Clear Timer on Capture mode
+  // Set compare match register for 96Hz increments
+  OCR0A = 80;  // = 16MHz/(96Hz*2*1024 prescaler) - 1, (OCR0A value must be less than 256)
+  TCCR0A |= (1 << WGM01); // Enable Clear Timer on Capture Match mode
   TCCR0B |= (1 << CS02) | (1 << CS00);  // Prescaler of 1024
   TIMSK0 |= (1 << OCIE0A);  // Enable timer compare interrupt
 
@@ -124,7 +133,7 @@ void setup(void) {
   sei();  // Enable global interrupts
 }
 
-// Interrupt service routine: Timer/Counter 0 at 200Hz
+// Interrupt service routine: Timer/Counter 0 at 96Hz
 // Updates the lantern's next state of its glowing cycle and
 // tracks the synchronisation pulse
 ISR(TIMER0_COMPA_vect){
@@ -136,6 +145,8 @@ ISR(TIMER0_COMPA_vect){
     }
     lanternState.pwmValue = lanternNextPwmValue(lanternState);  
   }
+
+  lanternState.isFlipped = (digitalRead(LANTERN_FLIP) == 0);
 }
 
 // Resets the lantern glowing cycle
@@ -162,6 +173,14 @@ void updateServoState(void) {
     servoState.current = IS_LEFT;
   } else {
     servoState.current = IS_NEITHER;
+  }
+
+  if (lanternState.isFlipped) {
+    switch (servoState.current) {
+      case (IS_RIGHT): servoState.current = IS_LEFT;  break;
+      case(IS_LEFT):   servoState.current = IS_RIGHT; break;
+      default:         break;
+    }
   }
 }
 
