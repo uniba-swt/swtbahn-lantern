@@ -39,8 +39,8 @@ the OneControl GPIO ports), while the SWTbahn Full uses an Adafruit Metro Mini
 
 ### Adafruit Metro Mini
 1. Download and install the USB serial drivers
-   * [Virtual COM port drivers]([url](http://www.ftdichip.com/Drivers/VCP.htm))
-   * [USB to UART bridge VCP drivers]([url](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads))
+   * [Virtual COM port drivers](http://www.ftdichip.com/Drivers/VCP.htm)
+   * [USB to UART bridge VCP drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads)
 2. Open `adafruit-metro-mini.ino` in Arduino IDE
 3. Plug the Adafruit Metro Mini into a USB port of your computer, and record the serial port it has been assigned
 4. Select Tools in the menu bar and configure the following settings:
