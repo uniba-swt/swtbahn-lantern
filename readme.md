@@ -25,7 +25,7 @@ the OneControl GPIO ports), while the SWTbahn Full uses an Adafruit Metro Mini
 ## Programming with Arduino IDE
 
 ### ATtiny84A
-1. Open `lantern-attiny84a.ino` in Arduino IDE
+1. Open `attiny84a.ino` in Arduino IDE
 2. Plug the STK500 programmer into the computer, and record the serial port it has been assigned
 3. Select Tools in the menu bar and configure the following settings:
    * Board: ATtiny/24/48/84
@@ -39,12 +39,12 @@ the OneControl GPIO ports), while the SWTbahn Full uses an Adafruit Metro Mini
 
 ### Adafruit Metro Mini
 1. Download and install the USB serial drivers
-   * Virtual COM port drivers
-   * USB to UART bridge VCP drivers
-2. Open `lantern-adafruit-metro-mini.ino` in Arduino IDE
+   * [Virtual COM port drivers]([url](http://www.ftdichip.com/Drivers/VCP.htm))
+   * [USB to UART bridge VCP drivers]([url](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads))
+2. Open `adafruit-metro-mini.ino` in Arduino IDE
 3. Plug the Adafruit Metro Mini into a USB port of your computer, and record the serial port it has been assigned
 4. Select Tools in the menu bar and configure the following settings:
-   * Board: Arduino/Genuino UNO
+   * Board: Arduino UNO
    * Port: Whichever port the programmer has been assigned
    * Programmer: USBtinyISP
 5. Compile and upload to the Adafruit Metro Mini
